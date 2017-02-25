@@ -33,9 +33,19 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
-
-    # Find all instances of naked twins
-    # Eliminate the naked twins as possibilities for their peers
+    two_values = [box for box in values.keys() if len(values[box]) == 2]
+    twin_values = {}
+    for box in two_values:
+        for peer in peers[box]:
+            if values[box] == values[peer] and box not in twin_values:
+                twin_values[peer] = 1
+                twin_units = [unit for unit in unitlist if box in unit and peer in unit]
+                for unit in twin_units:
+                    digits = values[box]
+                    for unit_peer in unit:
+                        if unit_peer != box and unit_peer != peer:
+                            assign_value(values, unit_peer, values[unit_peer].replace(digits[0], '').replace(digits[1], ''))
+    return values
 
 def grid_values(grid):
     """
@@ -110,9 +120,11 @@ def reduce_puzzle(values):
         solved_values_before = len([box for box in values.keys() if len(values[box]) == 1])
         values = eliminate(values)
         values = only_choice(values)
+        values = naked_twins(values)
         solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
         stalled = solved_values_before == solved_values_after
         if len([box for box in values.keys() if len(values[box]) == 0]):
+            display(values)
             return False
     return values
 
@@ -151,11 +163,11 @@ if __name__ == '__main__':
     diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
     display(solve(diag_sudoku_grid))
 
-    try:
-        from visualize import visualize_assignments
-        visualize_assignments(assignments)
+    #try:
+    #    from visualize import visualize_assignments
+    #    visualize_assignments(assignments)
 
-    except SystemExit:
-        pass
-    except:
-        print('We could not visualize your board due to a pygame issue. Not a problem! It is not a requirement.')
+    #except SystemExit:
+    #    pass
+    #except:
+    #    print('We could not visualize your board due to a pygame issue. Not a problem! It is not a requirement.')
