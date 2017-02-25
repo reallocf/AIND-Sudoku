@@ -10,8 +10,8 @@ boxes = cross(rows, cols)
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
 square_units = [cross(rsq, csq) for rsq in ('ABC', 'DEF', 'GHI') for csq in ('123', '456', '789')]
-diag_units = [[rows[i] + cols[i] for i in range(len(rows))]] + [[rows[i] + cols[-i - 1] for i in range(len(rows))]]
-unitlist = row_units + column_units + square_units + diag_units
+diag_units = [[rows[i] + cols[i] for i in range(len(rows))]] + [[rows[i] + cols[-i - 1] for i in range(len(rows))]] # define the expected new units for each major diagonal
+unitlist = row_units + column_units + square_units + diag_units # add the new units to the unitlist to then be included with all the others
 units = dict((box, [unit for unit in unitlist if box in unit]) for box in boxes)
 peers = dict((box, set(sum(units[box],[])) - set([box])) for box in boxes)
 
@@ -37,13 +37,13 @@ def naked_twins(values):
     twin_values = {}
     for box in two_values:
         for peer in peers[box]:
-            if values[box] == values[peer] and box not in twin_values:
-                twin_values[peer] = 1
-                twin_units = [unit for unit in unitlist if box in unit and peer in unit]
+            if values[box] == values[peer] and box not in twin_values: # find all naked twins
+                twin_values[peer] = 1 # mark the naked twin peer so there isn't needless repetition
+                twin_units = [unit for unit in unitlist if box in unit and peer in unit] # identify which units the naked twins appear in
                 for unit in twin_units:
                     digits = values[box]
                     for unit_peer in unit:
-                        if unit_peer != box and unit_peer != peer:
+                        if unit_peer != box and unit_peer != peer: # remove the digits in the unit(s) that the naked twins appear in for all values that aren't the twins themselves
                             assign_value(values, unit_peer, values[unit_peer].replace(digits[0], '').replace(digits[1], ''))
     return values
 
