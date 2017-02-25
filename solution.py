@@ -10,7 +10,8 @@ boxes = cross(rows, cols)
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
 square_units = [cross(rsq, csq) for rsq in ('ABC', 'DEF', 'GHI') for csq in ('123', '456', '789')]
-unitlist = row_units + column_units + square_units
+diag_units = [[rows[i] + cols[i] for i in range(len(rows))]] + [[rows[i] + cols[-i - 1] for i in range(len(rows))]]
+unitlist = row_units + column_units + square_units + diag_units
 units = dict((box, [unit for unit in unitlist if box in unit]) for box in boxes)
 peers = dict((box, set(sum(units[box],[])) - set([box])) for box in boxes)
 
